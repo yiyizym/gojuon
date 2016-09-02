@@ -163,7 +163,8 @@
       padding: 0;
     }
 
-    .content li {
+    .content li,
+    .content > .operation {
       padding: 10px 5%;
     }
 
@@ -203,7 +204,6 @@
     </tbody>
   </table>
     <div v-class="mockup: show" v-if="show" v-transition="bounce">
-    <button class="btn btn-large btn-block" v-on="click: show = false">我要看图</button>
       <div class="content">
         <div class="question">{{currentQuestion}}</div>
         <section>
@@ -214,10 +214,13 @@
           </ul>
         </section>
         <!-- <div class="score">{{score}}</div> -->
-        <div class="wrong-answers">
+        <!-- <div class="wrong-answers">
           <span v-repeat="wrongAnswers">{{$key}}:{{$value}}</span>
+        </div> -->
+        <div class="operation">
+          <button class="btn btn-info btn-large btn-block" title="点击切换模式" v-on="click: changeMode">当前模式: {{modeString}}</button>
+          <button class="btn btn-info btn-large btn-block" v-on="click: show = false">我要看图</button>
         </div>
-        
       </div>
     </div>
 </div>
@@ -251,16 +254,29 @@
       indexArray: [],
       items: [],
       score: 0,
-      mode: {questions: "romes", answers: "katakanas"},
+      modes: [
+        ["romes", "hiraganas"],
+        ["romes","katakanas"],
+        ["hiraganas", "romes"],
+        ["hiraganas", "katakanas"],
+        ["katakanas", "romes"],
+        ["katakanas", "hiraganas"]
+      ],
+      defaultModeIndex: 0,
+      modeString: '',
       questions: null,
       answers: null,
       answered: false
     },
     methods: {
       onClick: function(item, row){
-        this.setMode(this.mode);
+        this.changeMode();
         this.generateSelection();
         this.show = true;
+      },
+      reload: function(){
+        this.clearIndexArray();
+        this.generateSelection();
       },
       generateSelection: function(){
         // this.index = Math.floor(Math.random() * LENGTH_OF_CHARS);
@@ -283,6 +299,10 @@
           this.indexArray = _.shuffle(this.genArray());
           return this.indexArray.shift();
         }
+      },
+
+      clearIndexArray: function(){
+        this.indexArray = [];
       },
 
       genArray: function(){
@@ -367,9 +387,13 @@
           vm.wrongAnswers.$add(item, 1);
         }
       },
-      setMode: function(mode){
-        this.questions = this[mode.questions];
-        this.answers = this[mode.answers];
+      changeMode: function(){
+        var mode = this.modes[this.defaultModeIndex];
+        this.modeString = mode[0] + ' -> ' + mode[1];
+        this.questions = this[mode[0]];
+        this.answers = this[mode[1]];
+        this.reload();
+        this.defaultModeIndex = (this.defaultModeIndex + 1) % 6;
       }
     }
   });
