@@ -8,6 +8,16 @@
   <script src="./underscore.js"></script>
   <link rel="stylesheet" type="text/css" href="./bootstrap.css">
   <style>
+    .btn-gray {
+      color: #323b44;
+      background-color: #d2dbe5;
+      border-color: #d2dbe5;
+    }
+    .btn-gray:hover {
+      color: #f9fafb;
+      background-color: #92969b;
+      border-color: #92969b;
+    }
     .gojuon th {
       text-align: center;
     }
@@ -172,7 +182,7 @@
       display: block;
       height: 5px;
       width: 0px;
-      background-color: #31b0d5;
+      background-color: #5bc0de;
     }
 
     .indicator.answered {
@@ -228,7 +238,7 @@
         <section>
           <ul v-class="answered: answered">
             <li v-repeat="item: answersForSelect" v-on="click: checkSelection(item)" v-class="rightAnswer: isTheSame(item)">
-              <button class="btn btn-large btn-block" v-class="btn-success: answered && isTheSame(item), btn-warning: !answered">{{item}}</button>
+              <button class="btn btn-large btn-block" v-class="btn-info: answered && isTheSame(item), btn-gray: !answered">{{item}}</button>
             </li>
           </ul>
         </section>
@@ -237,8 +247,8 @@
           <span v-repeat="wrongAnswers">{{$key}}:{{$value}}</span>
         </div> -->
         <div class="operation">
-          <button class="btn btn-info btn-large btn-block" title="点击切换模式" v-on="click: changeMode">当前模式: {{modeString}}</button>
-          <button class="btn btn-info btn-large btn-block" v-on="click: show = false">我要看图</button>
+          <button class="btn btn-gray btn-large btn-block" title="点击切换模式" v-on="click: changeMode">当前模式: {{modeString}}</button>
+          <button class="btn btn-gray btn-large btn-block" v-on="click: show = false">我要看图</button>
         </div>
       </div>
     </div>
@@ -285,7 +295,7 @@
       modeString: '',
       questions: null,
       answers: null,
-      progressTime: 4000,
+      progressTime: 1000,
       shiftingTimer: null,
       answered: false
     },
