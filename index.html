@@ -369,7 +369,7 @@
       setProgressTime: function(time){
         time = time || this.progressTime;
         var sheet = window.document.styleSheets[0];
-        sheet.insertRule('.indicator.answered { transition-duration: '+time/1000+'s; }', sheet.cssRules.length);
+        sheet.insertRule('.indicator.answered { transition-duration: '+time/1000.0+'s; }', sheet.cssRules.length);
       },
       genAnswers: function(index, num){
         console.log("index",index);
