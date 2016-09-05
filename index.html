@@ -161,6 +161,24 @@
     .content ul {
       list-style-type: none;  
       padding: 0;
+      background-color: #fff;
+      transition: background-color 4s;
+    }
+
+    .indicator {
+      position: absolute;
+      top: 0;
+      content: '';
+      display: block;
+      height: 5px;
+      width: 0px;
+      background-color: #31b0d5;
+    }
+
+    .indicator.answered {
+      width: 100%;
+      transition-property: width;
+      transition-timing-function: ease-out;
     }
 
     .content li,
@@ -206,6 +224,7 @@
     <div v-class="mockup: show" v-if="show" v-transition="bounce">
       <div class="content">
         <div class="question">{{currentQuestion}}</div>
+        <div class="indicator" v-class="answered: answered"></div>
         <section>
           <ul v-class="answered: answered">
             <li v-repeat="item: answersForSelect" v-on="click: checkSelection(item)" v-class="rightAnswer: isTheSame(item)">
@@ -266,6 +285,8 @@
       modeString: '',
       questions: null,
       answers: null,
+      progressTime: 4000,
+      shiftingTimer: null,
       answered: false
     },
     methods: {
@@ -275,6 +296,10 @@
         this.show = true;
       },
       reload: function(){
+        if(this.shiftingTimer) {
+          clearTimeout(this.shiftingTimer);
+        }
+        this.answered = false;
         this.clearIndexArray();
         this.generateSelection();
       },
@@ -315,14 +340,7 @@
 
       checkSelection: function(item){
 
-        //if this has been answered, and the right answer is being clicked go to next 
-        if (this.answered === true) {
-          if (item == this.currentAnswer) {
-            this.generateSelection();
-          } else {
-            return false;
-          }
-        } else{
+        if(this.answered !== true){
           //if this is the right answer, increase the score
           //else decrease the score
           //and push the index to indexArray
@@ -334,8 +352,24 @@
             this.recordWrongAnswer(this.currentQuestion);
             console.info(this.wrongAnswers);
           }
+          this.shiftToNext();
         }
-        this.answered = !this.answered;
+        else {
+          // noop
+        }
+      },
+      shiftToNext: function(){
+        var gojuon = this;
+        gojuon.shiftingTimer = setTimeout(function(){
+          gojuon.answered = false;
+          gojuon.generateSelection();
+        },gojuon.progressTime);
+        gojuon.answered = true;
+      },
+      setProgressTime: function(time){
+        time = time || this.progressTime;
+        var sheet = window.document.styleSheets[0];
+        sheet.insertRule('.indicator.answered { transition-duration: '+time/1000+'s; }', sheet.cssRules.length);
       },
       genAnswers: function(index, num){
         console.log("index",index);
@@ -397,6 +431,7 @@
       }
     }
   });
+  vm.setProgressTime();
   </script>
 
 
