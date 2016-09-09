@@ -209,8 +209,8 @@
   </style>
 </head>
 <body>
-
 <div class="gojuon">
+  <audio src="aiueo.mp3" class="audio" preload="auto"></audio>
   <table class="table table-bordered text-center">
     <thead>
       <tr>
@@ -302,7 +302,6 @@
     methods: {
       onClick: function(item, row){
         this.changeMode();
-        this.generateSelection();
         this.show = true;
       },
       reload: function(){
@@ -317,13 +316,14 @@
         // this.index = Math.floor(Math.random() * LENGTH_OF_CHARS);
         // this.index = (this.index + 1) % LENGTH_OF_CHARS;
         this.index = this.genIndex();
-        console.info("index: ", this.index);
+        // console.info("index: ", this.index);
         this.currentQuestion = this.questions[this.index];
-        console.info("currentQuestion: ", this.currentQuestion);
+        // console.info("currentQuestion: ", this.currentQuestion);
         this.currentAnswer = this.answers[this.index];
-        console.info("currentAnswer: ", this.currentAnswer);
+        // console.info("currentAnswer: ", this.currentAnswer);
         this.answersForSelect = this.genAnswers(this.index,3);
-        console.info("answersForSelect: ", this.answersForSelect);
+        // console.info("answersForSelect: ", this.answersForSelect);
+        this.readOutCurrentQuestion();
       },
 
       genIndex: function(){
@@ -382,20 +382,20 @@
         sheet.insertRule('.indicator.answered { transition-duration: '+time/1000.0+'s; }', sheet.cssRules.length);
       },
       genAnswers: function(index, num){
-        console.log("index",index);
+        // console.log("index",index);
         var answers = [this.answers[index]];
         var tailCur = this.answers.length - 1;
-        console.log("tailCur",tailCur);
+        // console.log("tailCur",tailCur);
         var answersCopy = _.clone(this.answers);// shallow copy
         swap(index, tailCur);
         while(num--){
           index = Math.floor(Math.random() * tailCur);
-          console.log("index",index);
+          // console.log("index",index);
           answers.push(answersCopy[index]);
           tailCur--;
           swap(index, tailCur);
-          console.log("answersCopy",answersCopy);
-          console.log("tailCur",tailCur);
+          // console.log("answersCopy",answersCopy);
+          // console.log("tailCur",tailCur);
 
         }
         
@@ -438,6 +438,21 @@
         this.answers = this[mode[1]];
         this.reload();
         this.defaultModeIndex = (this.defaultModeIndex + 1) % 6;
+      },
+      readOutCurrentQuestion: function(){
+        return;
+        // check audio support and ready
+        // stop reading if any
+        var audio = this.$el.querySelector('.audio');
+        // audio.pause();
+        // seek postion
+        audio.currentTime = 10.0;
+        // play and pause
+        audio.play();
+        setTimeout(function(){
+          audio.pause();
+          // console.log('>>>> time out')
+        }, 8000);
       }
     }
   });
