@@ -8,6 +8,16 @@
   <script src="./underscore.js"></script>
   <link rel="stylesheet" type="text/css" href="./bootstrap.css">
   <style>
+    .btn-gray {
+      color: #323b44;
+      background-color: #d2dbe5;
+      border-color: #d2dbe5;
+    }
+    .btn-gray:hover {
+      color: #f9fafb;
+      background-color: #92969b;
+      border-color: #92969b;
+    }
     .gojuon th {
       text-align: center;
     }
@@ -161,6 +171,24 @@
     .content ul {
       list-style-type: none;  
       padding: 0;
+      background-color: #fff;
+      transition: background-color 4s;
+    }
+
+    .indicator {
+      position: absolute;
+      top: 0;
+      content: '';
+      display: block;
+      height: 5px;
+      width: 0px;
+      background-color: #5bc0de;
+    }
+
+    .indicator.answered {
+      width: 100%;
+      transition-property: width;
+      transition-timing-function: ease-out;
     }
 
     .content li,
@@ -181,8 +209,8 @@
   </style>
 </head>
 <body>
-
 <div class="gojuon">
+  <audio src="aiueo.mp3" class="audio" preload="auto"></audio>
   <table class="table table-bordered text-center">
     <thead>
       <tr>
@@ -206,10 +234,11 @@
     <div v-class="mockup: show" v-if="show" v-transition="bounce">
       <div class="content">
         <div class="question">{{currentQuestion}}</div>
+        <div class="indicator" v-class="answered: answered"></div>
         <section>
           <ul v-class="answered: answered">
             <li v-repeat="item: answersForSelect" v-on="click: checkSelection(item)" v-class="rightAnswer: isTheSame(item)">
-              <button class="btn btn-large btn-block" v-class="btn-success: answered && isTheSame(item), btn-warning: !answered">{{item}}</button>
+              <button class="btn btn-large btn-block" v-class="btn-info: answered && isTheSame(item), btn-gray: !answered">{{item}}</button>
             </li>
           </ul>
         </section>
@@ -218,8 +247,8 @@
           <span v-repeat="wrongAnswers">{{$key}}:{{$value}}</span>
         </div> -->
         <div class="operation">
-          <button class="btn btn-info btn-large btn-block" title="点击切换模式" v-on="click: changeMode">当前模式: {{modeString}}</button>
-          <button class="btn btn-info btn-large btn-block" v-on="click: show = false">我要看图</button>
+          <button class="btn btn-gray btn-large btn-block" title="点击切换模式" v-on="click: changeMode">当前模式: {{modeString}}</button>
+          <button class="btn btn-gray btn-large btn-block" v-on="click: show = false">我要看图</button>
         </div>
       </div>
     </div>
@@ -266,15 +295,20 @@
       modeString: '',
       questions: null,
       answers: null,
+      progressTime: 1000,
+      shiftingTimer: null,
       answered: false
     },
     methods: {
       onClick: function(item, row){
         this.changeMode();
-        this.generateSelection();
         this.show = true;
       },
       reload: function(){
+        if(this.shiftingTimer) {
+          clearTimeout(this.shiftingTimer);
+        }
+        this.answered = false;
         this.clearIndexArray();
         this.generateSelection();
       },
@@ -282,13 +316,14 @@
         // this.index = Math.floor(Math.random() * LENGTH_OF_CHARS);
         // this.index = (this.index + 1) % LENGTH_OF_CHARS;
         this.index = this.genIndex();
-        console.info("index: ", this.index);
+        // console.info("index: ", this.index);
         this.currentQuestion = this.questions[this.index];
-        console.info("currentQuestion: ", this.currentQuestion);
+        // console.info("currentQuestion: ", this.currentQuestion);
         this.currentAnswer = this.answers[this.index];
-        console.info("currentAnswer: ", this.currentAnswer);
+        // console.info("currentAnswer: ", this.currentAnswer);
         this.answersForSelect = this.genAnswers(this.index,3);
-        console.info("answersForSelect: ", this.answersForSelect);
+        // console.info("answersForSelect: ", this.answersForSelect);
+        this.readOutCurrentQuestion();
       },
 
       genIndex: function(){
@@ -315,14 +350,7 @@
 
       checkSelection: function(item){
 
-        //if this has been answered, and the right answer is being clicked go to next 
-        if (this.answered === true) {
-          if (item == this.currentAnswer) {
-            this.generateSelection();
-          } else {
-            return false;
-          }
-        } else{
+        if(this.answered !== true){
           //if this is the right answer, increase the score
           //else decrease the score
           //and push the index to indexArray
@@ -334,24 +362,40 @@
             this.recordWrongAnswer(this.currentQuestion);
             console.info(this.wrongAnswers);
           }
+          this.shiftToNext();
         }
-        this.answered = !this.answered;
+        else {
+          // noop
+        }
+      },
+      shiftToNext: function(){
+        var gojuon = this;
+        gojuon.shiftingTimer = setTimeout(function(){
+          gojuon.answered = false;
+          gojuon.generateSelection();
+        },gojuon.progressTime);
+        gojuon.answered = true;
+      },
+      setProgressTime: function(time){
+        time = time || this.progressTime;
+        var sheet = window.document.styleSheets[0];
+        sheet.insertRule('.indicator.answered { transition-duration: '+time/1000.0+'s; }', sheet.cssRules.length);
       },
       genAnswers: function(index, num){
-        console.log("index",index);
+        // console.log("index",index);
         var answers = [this.answers[index]];
         var tailCur = this.answers.length - 1;
-        console.log("tailCur",tailCur);
+        // console.log("tailCur",tailCur);
         var answersCopy = _.clone(this.answers);// shallow copy
         swap(index, tailCur);
         while(num--){
           index = Math.floor(Math.random() * tailCur);
-          console.log("index",index);
+          // console.log("index",index);
           answers.push(answersCopy[index]);
           tailCur--;
           swap(index, tailCur);
-          console.log("answersCopy",answersCopy);
-          console.log("tailCur",tailCur);
+          // console.log("answersCopy",answersCopy);
+          // console.log("tailCur",tailCur);
 
         }
         
@@ -394,9 +438,25 @@
         this.answers = this[mode[1]];
         this.reload();
         this.defaultModeIndex = (this.defaultModeIndex + 1) % 6;
+      },
+      readOutCurrentQuestion: function(){
+        return;
+        // check audio support and ready
+        // stop reading if any
+        var audio = this.$el.querySelector('.audio');
+        // audio.pause();
+        // seek postion
+        audio.currentTime = 10.0;
+        // play and pause
+        audio.play();
+        setTimeout(function(){
+          audio.pause();
+          // console.log('>>>> time out')
+        }, 8000);
       }
     }
   });
+  vm.setProgressTime();
   </script>
 
 
