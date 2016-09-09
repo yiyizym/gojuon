@@ -210,7 +210,7 @@
 </head>
 <body>
 <div class="gojuon">
-  <audio src="aiueo.mp3" class="audio" preload="auto"></audio>
+  <audio src="aiueo.ogg" class="audio" preload="auto"></audio>
   <table class="table table-bordered text-center">
     <thead>
       <tr>
@@ -440,22 +440,21 @@
         this.defaultModeIndex = (this.defaultModeIndex + 1) % 6;
       },
       readOutCurrentQuestion: function(){
-        return;
-        // check audio support and ready
-        // stop reading if any
+        this.$el.querySelector('.audio').currentTime = Number(this.index);
+      },
+      addAudioSeekedListener: function(){
         var audio = this.$el.querySelector('.audio');
-        // audio.pause();
-        // seek postion
-        audio.currentTime = 10.0;
-        // play and pause
-        audio.play();
-        setTimeout(function(){
-          audio.pause();
-          // console.log('>>>> time out')
-        }, 8000);
+        audio.addEventListener('seeked', function(){
+          audio.play();
+          setTimeout(function(){
+            audio.pause();
+          }, 1000);
+
+        });
       }
     }
   });
+  vm.addAudioSeekedListener();
   vm.setProgressTime();
   </script>
 
