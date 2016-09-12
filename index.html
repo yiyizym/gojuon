@@ -6,7 +6,6 @@
   <meta name=”viewport” content=”initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0″>
   <title>Gojuon</title>
   <script src="./vue.min.js"></script>
-  <script src="./underscore.js"></script>
   <link rel="stylesheet" type="text/css" href="./bootstrap.css">
   <link rel="stylesheet" type="text/css" href="./stylesheet.css">
 </head>
@@ -58,6 +57,41 @@
 
   <script>
   var LENGTH_OF_CHARS = 45;
+  var copy_arr = function(obj){
+    var copy;
+    if(null == obj || "object" != typeof obj) {
+      return obj;
+    }
+    if (obj instanceof Array) {
+      copy = [];
+      for (var i = 0, len = obj.length; i < len; i++) {
+        copy[i] = copy_arr(obj[i]);
+      }
+      return copy;
+    }
+  };
+  var shuffle_arr = function(arr){
+    var copied_arr = copy_arr(arr);
+    if( 1 >= copied_arr.length ) {
+      return copied_arr;
+    }
+    var getRandom = function(range){
+      return Math.floor(Math.random() * range);
+    };
+    var exchange = function(arr, a, b){
+      var c = arr[b];
+      arr[b] = arr[a];
+      arr[a] = c;
+    };
+    var index = null; 
+    var range = null;
+    for (var i = 0; i < copied_arr.length; i++) {
+      range = copied_arr.length - i;
+      index = getRandom(range); // [0,range)
+      exchange(copied_arr, index, range - 1);
+    }
+    return copied_arr;
+  };
   var vm = new Vue({
     el: ".gojuon",
     data: {
@@ -133,7 +167,7 @@
         if (this.indexArray.length) {
           return this.indexArray.shift();
         } else{
-          this.indexArray = _.shuffle(this.genArray());
+          this.indexArray = shuffle_arr(this.genArray());
           return this.indexArray.shift();
         }
       },
@@ -188,7 +222,7 @@
         var answers = [this.answers[index]];
         var tailCur = this.answers.length - 1;
         // console.log("tailCur",tailCur);
-        var answersCopy = _.clone(this.answers);// shallow copy
+        var answersCopy = copy_arr(this.answers);// shallow copy
         swap(index, tailCur);
         while(num--){
           index = Math.floor(Math.random() * tailCur);
@@ -201,7 +235,7 @@
 
         }
         
-        return _.shuffle(answers);
+        return shuffle_arr(answers);
 
         function swap(index, tail){
           var temp;
