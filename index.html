@@ -8,206 +8,7 @@
   <script src="./vue.min.js"></script>
   <script src="./underscore.js"></script>
   <link rel="stylesheet" type="text/css" href="./bootstrap.css">
-  <style>
-    .btn-gray {
-      color: #323b44;
-      background-color: #d2dbe5;
-      border-color: #d2dbe5;
-    }
-    .btn-gray:hover {
-      color: #f9fafb;
-      background-color: #92969b;
-      border-color: #92969b;
-    }
-    .gojuon th {
-      text-align: center;
-    }
-
-    .gojuon .upper,
-    .gojuon .lower {
-      display: block;
-    }
-
-    .gojuon .char {
-      padding: 0 5px;
-    }
-
-    .mockup {
-      position: fixed;
-      display: block;
-      width: 100%;
-      height: 100%;
-      top: 0;
-      left: 0;
-      background-color: rgba(100,100,100,.2);
-
-    }
-
-    .mockup.bounce-enter {
-      -webkit-animation: bounce-in .5s;
-         -moz-animation: bounce-in .5s;
-           -o-animation: bounce-in .5s;
-              animation: bounce-in .5s;
-    }
-
-    .mockup.bounce-leave {
-      -webkit-animation: bounce-out .5s;
-         -moz-animation: bounce-out .5s;
-           -o-animation: bounce-out .5s;
-              animation: bounce-out .5s;
-      
-    }
-
-    @keyframes bounce-in {
-      0% {
-        -webkit-transform: scale(0);
-           -moz-transform: scale(0);
-            -ms-transform: scale(0);
-             -o-transform: scale(0);
-                transform: scale(0);
-      }
-      50% {
-        -webkit-transform: scale(1.5);
-           -moz-transform: scale(1.5);
-            -ms-transform: scale(1.5);
-             -o-transform: scale(1.5);
-                transform: scale(1.5);
-      }
-      100% {
-        -webkit-transform: scale(1);
-           -moz-transform: scale(1);
-            -ms-transform: scale(1);
-             -o-transform: scale(1);
-                transform: scale(1);
-      }
-    }
-
-    @keyframes bounce-out {
-      0% {
-        -webkit-transform: scale(1);
-           -moz-transform: scale(1);
-            -ms-transform: scale(1);
-             -o-transform: scale(1);
-                transform: scale(1);
-      }
-      50% {
-        -webkit-transform: scale(1.5);
-           -moz-transform: scale(1.5);
-            -ms-transform: scale(1.5);
-             -o-transform: scale(1.5);
-                transform: scale(1.5);
-      }
-      100% {
-        -webkit-transform: scale(0);
-           -moz-transform: scale(0);
-            -ms-transform: scale(0);
-             -o-transform: scale(0);
-                transform: scale(0);
-      }
-    }
-
-    @-webkit-keyframes bounce-in {
-      0% {
-        -webkit-transform: scale(0);
-           -moz-transform: scale(0);
-            -ms-transform: scale(0);
-             -o-transform: scale(0);
-                transform: scale(0);
-      }
-      50% {
-        -webkit-transform: scale(1.5);
-           -moz-transform: scale(1.5);
-            -ms-transform: scale(1.5);
-             -o-transform: scale(1.5);
-                transform: scale(1.5);
-      }
-      100% {
-        -webkit-transform: scale(1);
-           -moz-transform: scale(1);
-            -ms-transform: scale(1);
-             -o-transform: scale(1);
-                transform: scale(1);
-      }
-    }
-
-
-    @-webkit-keyframes bounce-out {
-      0% {
-        -webkit-transform: scale(1);
-           -moz-transform: scale(1);
-            -ms-transform: scale(1);
-             -o-transform: scale(1);
-                transform: scale(1);
-      }
-      50% {
-        -webkit-transform: scale(1.5);
-           -moz-transform: scale(1.5);
-            -ms-transform: scale(1.5);
-             -o-transform: scale(1.5);
-                transform: scale(1.5);
-      }
-      100% {
-        -webkit-transform: scale(0);
-           -moz-transform: scale(0);
-            -ms-transform: scale(0);
-             -o-transform: scale(0);
-                transform: scale(0);
-      }
-    }
-
-    .content {
-      position: absolute;
-      top: 0;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      display: block;
-      margin: auto;
-      width: 80%;
-      height: 50%;
-      max-width: 1000px;
-      background: #fff;
-    }
-
-    .content ul {
-      list-style-type: none;  
-      padding: 0;
-      background-color: #fff;
-      transition: background-color 4s;
-    }
-
-    .indicator {
-      position: absolute;
-      top: 0;
-      content: '';
-      display: block;
-      height: 5px;
-      width: 0px;
-      background-color: #5bc0de;
-    }
-
-    .indicator.answered {
-      width: 100%;
-      transition-property: width;
-      transition-timing-function: ease-out;
-    }
-
-    .content li,
-    .content > .operation {
-      padding: 10px 5%;
-    }
-
-    .question {
-      text-align: center;
-      font-size: xx-large;
-      font-weight: bold;
-    }
-
-    .score {
-      text-align: center;
-      font-size: xx-large;
-    }
-  </style>
+  <link rel="stylesheet" type="text/css" href="./stylesheet.css">
 </head>
 <body>
 <div class="gojuon">
@@ -239,7 +40,7 @@
         <section>
           <ul v-class="answered: answered">
             <li v-repeat="item: answersForSelect" v-on="click: checkSelection(item)" v-class="rightAnswer: isTheSame(item)">
-              <button class="btn btn-large btn-block" v-class="btn-info: answered && isTheSame(item), btn-gray: !answered">{{item}}</button>
+              <button class="btn btn-block" v-class="btn-info: answered && isTheSame(item), btn-gray: !answered">{{item}}</button>
             </li>
           </ul>
         </section>
@@ -248,8 +49,8 @@
           <span v-repeat="wrongAnswers">{{$key}}:{{$value}}</span>
         </div> -->
         <div class="operation">
-          <button class="btn btn-gray btn-large btn-block" title="点击切换模式" v-on="click: changeMode">当前模式: {{modeString}}</button>
-          <button class="btn btn-gray btn-large btn-block" v-on="click: show = false">我要看图</button>
+          <button class="btn btn-gray btn-block" title="点击切换模式" v-on="click: changeMode">当前模式: {{modeString}}</button>
+          <button class="btn btn-gray btn-block" v-on="click: show = false">我要看图</button>
         </div>
       </div>
     </div>
